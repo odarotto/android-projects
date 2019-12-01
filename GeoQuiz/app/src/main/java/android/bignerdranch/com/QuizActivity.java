@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
+
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
 
@@ -66,7 +67,9 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Start CheatActivity
-                Intent intent = new Intent(QuizActivity.this, CheatActivity.class);
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(QuizActivity.this,
+                        answerIsTrue);
                 startActivity(intent);
             }
         });
