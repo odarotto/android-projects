@@ -1,3 +1,5 @@
+package android.bignerdranch.com;
+
 public class Question {
 
     private int mTextResId;
