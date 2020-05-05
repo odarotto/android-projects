@@ -29,6 +29,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private int mCurrentIndex = 0;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,11 +72,13 @@ public class QuizActivity extends AppCompatActivity {
         updateQuestion();
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart() called");
     }
+
 
     @Override
     public void onResume() {
@@ -83,11 +86,13 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onResume() called");
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause() called");
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -96,11 +101,13 @@ public class QuizActivity extends AppCompatActivity {
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
     }
 
+
     @Override
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop() called");
     }
+
 
     @Override
     public void onDestroy() {
@@ -108,13 +115,28 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onDestroy() called");
     }
 
+
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+
+        if (mQuestionBank[mCurrentIndex].isAnswered()) {
+            buttonsEnabled(false);
+        } else {
+            buttonsEnabled(true);
+        }
     }
+
+
+    private void buttonsEnabled(boolean enabled) {
+        mTrueButton.setEnabled(enabled);
+        mFalseButton.setEnabled(enabled);
+    }
+
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        mQuestionBank[mCurrentIndex].setAnswered(true);
 
         int messageResId = 0;
 
@@ -125,5 +147,26 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+
+        buttonsEnabled(false);
+
+        if (mCurrentIndex == mQuestionBank.length-1) {
+            checkAnswers();
+        }
+    }
+
+
+    private void checkAnswers() {
+        float result = 0;
+        int sum = 0;
+        for (Question q: mQuestionBank) {
+            if (q.isAnswerTrue()) {
+                sum += 1;
+            }
+        }
+
+        result = (sum / mQuestionBank.length) * 100;
+        Toast.makeText(this, "You have answered "+result+"% correctly.",
+                Toast.LENGTH_SHORT).show();
     }
 }
