@@ -14,6 +14,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_IS_CHEATER = "is_cheater";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
@@ -42,6 +43,7 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mIsCheater = savedInstanceState.getBoolean(KEY_IS_CHEATER, false);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -64,11 +66,12 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+
         mCheatButton = (Button) findViewById(R.id.cheat_button);
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Start cheatactivity
+                // Start cheatActivity
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
                 Intent intent = CheatActivity.newIntent(QuizActivity.this,
                         answerIsTrue);
@@ -127,6 +130,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putBoolean(KEY_IS_CHEATER, mIsCheater);
     }
 
     @Override
@@ -144,6 +148,13 @@ public class QuizActivity extends AppCompatActivity {
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        if (mQuestionBank[mCurrentIndex].isAnswered()) {
+            mTrueButton.setEnabled(false);
+            mFalseButton.setEnabled(false);
+        } else {
+            mTrueButton.setEnabled(true);
+            mFalseButton.setEnabled(true);
+        }
     }
 
     private void checkAnswer(boolean userPressedTrue) {
@@ -162,5 +173,6 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+        mQuestionBank[mCurrentIndex].setAnswered(true);
     }
 }
